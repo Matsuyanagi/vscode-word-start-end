@@ -179,3 +179,8 @@ node_modules
 .vscode-test/
 *.vsix
 
+/.codex
+/.gemini
+/.claude
+/.codegraph
+

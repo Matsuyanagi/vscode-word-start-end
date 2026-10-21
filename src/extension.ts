@@ -1,26 +1,55 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { findWordBoundary, type Direction } from './wordBoundary';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "word-start-end" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('word-start-end.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Word Start End!');
-	});
-
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('word-start-end.cursorWordLeft', () => moveCursors('left')),
+		vscode.commands.registerCommand('word-start-end.cursorWordRight', () => moveCursors('right')),
+	);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
+
+function resolveWordSeparators(document: vscode.TextDocument): string {
+	const configured = vscode.workspace.getConfiguration('word-start-end', document).get<unknown>('wordSeparators');
+	if (typeof configured === 'string') {
+		return configured;
+	}
+	const inherited = vscode.workspace.getConfiguration('editor', document).get<unknown>('wordSeparators');
+	return typeof inherited === 'string' ? inherited : '';
+}
+
+function moveCursors(direction: Direction): void {
+	const editor = vscode.window.activeTextEditor;
+	if (!editor) {
+		return;
+	}
+	const document = editor.document;
+	const separators = resolveWordSeparators(document);
+	const lines = new Map<number, string>();
+	function lineText(line: number): string {
+		let text = lines.get(line);
+		if (text === undefined) {
+			text = document.lineAt(line).text;
+			lines.set(line, text);
+		}
+		return text;
+	}
+
+	editor.selections = editor.selections.map(selection => {
+		let { line, character } = selection.active;
+		const text = lineText(line);
+		if (direction === 'left' && character === 0 && line > 0) {
+			character = lineText(--line).length;
+		} else if (direction === 'right' && character === text.length && line < document.lineCount - 1) {
+			line++;
+			character = 0;
+		} else {
+			character = findWordBoundary(text, character, direction, separators);
+		}
+		return new vscode.Selection(line, character, line, character);
+	});
+	if (editor.selections.length === 1) {
+		editor.revealRange(editor.selection);
+	}
+}

@@ -9,3 +9,15 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+reference/**
+docs/**
+.codegraph/**
+.claude/**
+.codex/**
+.gemini/**
+.superpowers/**
+.mcp.json
+AGENTS.md
+GEMINI.md
+*.code-workspace
+out/test/**

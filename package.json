@@ -14,10 +14,27 @@
   "contributes": {
     "commands": [
       {
-        "command": "word-start-end.helloWorld",
-        "title": "Hello World"
+        "command": "word-start-end.cursorWordLeft",
+        "title": "Move to Previous Word Boundary",
+        "category": "Word Start End"
+      },
+      {
+        "command": "word-start-end.cursorWordRight",
+        "title": "Move to Next Word Boundary",
+        "category": "Word Start End"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Word Start End",
+      "properties": {
+        "word-start-end.wordSeparators": {
+          "type": ["string", "null"],
+          "default": null,
+          "scope": "language-overridable",
+          "markdownDescription": "この拡張で使用する区切り文字。未設定または `null` の場合は、現在の文書の `#editor.wordSeparators#` を参照します。空文字列は明示的な区切り文字を無効にしますが、文字種による区切りは有効です。"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
