@@ -1,8 +1,13 @@
 {
   "name": "word-start-end",
   "displayName": "Word Start End",
-  "description": "Move the cursor to the start and end of a word.",
+  "description": "Move the cursor left or right to the point where the character type—such as between Japanese and alphanumeric characters—switches.",
   "version": "0.0.1",
+  "publisher": "Matsuyanagi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Matsuyanagi/vscode-word-start-end.git"
+  },
   "engines": {
     "vscode": "^1.140.0"
   },
